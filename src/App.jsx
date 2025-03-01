@@ -1,35 +1,61 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from "react";
+import "./App.css";
+import Navbar from "./AuthComponent/Navbar";
+import Home from "./Pages/Home";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "./firebase/firebaseConfig";
+import axios from "axios";
+const API_KEY = "6d2b4f216f4b43df90535020250103";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [user, setUser] = useState(null);
+  const [weatherData, setWeatherData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+
+  //updating the UI if user logged out
+  useEffect(() => {
+    const unSunscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+    return () => unSunscribe();
+  }, []);
+  //fethc the real time weather
+  const fetchWeather = async (location) => {
+    setLoading(true);
+    setError(null);
+    setWeatherData(null);
+    try {
+      const response = await axios.get(
+        `http://api.weatherapi.com/v1/current.json`,
+        {
+          params: {
+            key: API_KEY,
+            q: location,
+            aqi: "yes",
+          },
+        }
+      );
+      setWeatherData(response.data);
+    } catch (err) {
+      setError(err.response?.data?.error?.message || "Location not Found");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+      <Navbar user={user} setUser={setUser} />
+      <Home
+        user={user}
+        fetchWeather={fetchWeather}
+        weatherData={weatherData}
+        loading={loading}
+        error={error}
+      />
     </>
-  )
+  );
 }
 
-export default App
+export default App;
