@@ -5,28 +5,33 @@ import Home from "./Pages/Home";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase/firebaseConfig";
 import axios from "axios";
+
 const API_KEY = "6d2b4f216f4b43df90535020250103";
 
 function App() {
   const [user, setUser] = useState(null);
   const [weatherData, setWeatherData] = useState(null);
+
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  //updating the UI if user logged out
+  // Updating the UI when user logs in/out
   useEffect(() => {
-    const unSunscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unSubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
     });
-    return () => unSunscribe();
+    return () => unSubscribe();
   }, []);
-  //fethc the real time weather
+
+  // Fetch real-time weather + forecast
   const fetchWeather = async (location) => {
     setLoading(true);
     setError(null);
     setWeatherData(null);
+
     try {
-      const response = await axios.get(
+      // Fetch current weather
+      const weatherResponse = await axios.get(
         `http://api.weatherapi.com/v1/current.json`,
         {
           params: {
@@ -36,7 +41,11 @@ function App() {
           },
         }
       );
-      setWeatherData(response.data);
+
+      
+
+      setWeatherData(weatherResponse.data);
+     
     } catch (err) {
       setError(err.response?.data?.error?.message || "Location not Found");
     } finally {

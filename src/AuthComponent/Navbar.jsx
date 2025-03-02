@@ -1,8 +1,9 @@
-import { Box, Button, Flex, Heading, HStack, Spacer } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, Spacer } from "@chakra-ui/react";
 import React from "react";
 import { auth, provider } from "../firebase/firebaseConfig";
 import { signInWithPopup, signOut } from "firebase/auth";
-import { FaRainbow } from "react-icons/fa6";
+import { FaHandsPraying, FaRainbow } from "react-icons/fa6";
+
 
 
 const Navbar = ({ user, setUser }) => {
@@ -23,15 +24,17 @@ const Navbar = ({ user, setUser }) => {
     <div>
       <Box bg={"blackAlpha.900"} color={"white"} p={4}>
         <Flex align={"center"}>
-          <FaRainbow/>
           <Heading as={"h2"} fontWeight={"bolder"}>
-            Weather App
+          ⛈️ Weather App❄️
           </Heading>
+
           <Spacer />
           <Heading>
             {user ? (
               <Flex align={"center"} gap={4}>
-                <Heading>Welcome , {user.displayName}</Heading>
+                <Heading>Welcome</Heading>
+                <FaHandsPraying size={32} color="goldenrod"/>,
+                <Heading>{user.displayName}</Heading>
                 <Button onClick={logout} bg={"blue.300"}>
                   Logout
                 </Button>
