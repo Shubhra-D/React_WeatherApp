@@ -63,6 +63,7 @@ const Home = ({ user, fetchWeather, weatherData, loading, error }) => {
       Cloudy: "React_WeatherApp/Images/cloud.jpeg",
       Overcast: "React_WeatherApp/Images/cloud.jpeg",
       Mist: "React_WeatherApp/Images/cloud.jpeg",
+      "Patchy light snow":"React_WeatherApp/Images/snow.jpeg"
     };
     const soundMap = {
         Clear:"React_WeatherApp/Sounds/sunny.mp3",
