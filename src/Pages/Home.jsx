@@ -9,8 +9,9 @@ import {
   Image,
   VStack,
 } from "@chakra-ui/react";
+
 import { signInWithPopup } from "firebase/auth";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   FaCloudShowersWater,
   FaHand,
@@ -18,18 +19,20 @@ import {
   FaUmbrella,
 } from "react-icons/fa6";
 import { auth, provider } from "../firebase/firebaseConfig";
-import { FaCloudSunRain, FaHome, FaTint } from "react-icons/fa";
+import { FaCloudSunRain, FaHome, FaTint, FaVolumeMute, FaVolumeUp } from "react-icons/fa";
 import { SkeletonText } from "../components/ui/skeleton";
 import Time from "./Time";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
-const Home = ({ user, fetchWeather, weatherData, forecastData, loading, error }) => {
+const Home = ({ user, fetchWeather, weatherData, loading, error }) => {
   const condition = weatherData?.current?.condition?.text;
   const [location, setLocation] = useState("");
-  const [backgroundImage, setBackgroundImage] = useState("./Images/clear.jpeg");
-
-  // Login
+  const [backgroundImage, setBackgroundImage] = useState("React_WeatherApp/Images/clear.jpeg");
+ const audioRef = useRef(new Audio());
+ //sound enable or disable
+ const [isSoundOn,setSound] = useState(true);
+ // Login
   const login = async () => {
     try {
       const result = await signInWithPopup(auth, provider);
@@ -50,19 +53,66 @@ const Home = ({ user, fetchWeather, weatherData, forecastData, loading, error })
   useEffect(() => {
     if (!condition) return;
     const imageMap = {
-      Clear: "./Images/clear.jpeg",
-      Sunny: "./Images/sunny.jpeg",
-      Rain: "./Images/rain.jpeg",
-      Drizzle: "./Images/rain.jpeg",
-      "Light rain": "./Images/drizzle.jpeg",
-      Snow: "./Images/snow.jpeg",
-      "Light snow":"./Images/snow.jpeg",
-      Cloudy: "./Images/cloud.jpeg",
-      Overcast: "./Images/cloud.jpeg",
-      Mist: "./Images/cloud.jpeg",
+      Clear: "React_WeatherApp/Images/clear.jpeg",
+      Sunny: "React_WeatherApp/Images/sunny.jpeg",
+      Rain: "React_WeatherApp/Images/rain.jpeg",
+      Drizzle: "React_WeatherApp/Images/rain.jpeg",
+      "Light rain": "React_WeatherApp/Images/drizzle.jpeg",
+      Snow: "React_WeatherApp/Images/snow.jpeg",
+      "Light snow":"React_WeatherApp/Images/snow.jpeg",
+      Cloudy: "React_WeatherApp/Images/cloud.jpeg",
+      Overcast: "React_WeatherApp/Images/cloud.jpeg",
+      Mist: "React_WeatherApp/Images/cloud.jpeg",
     };
-    setBackgroundImage(imageMap[condition.trim()] || "./Images/clear.jpeg");
-  }, [condition]);
+    const soundMap = {
+        Clear:"React_WeatherApp/Sounds/sunny.mp3",
+        Sunny:"React_WeatherApp/Sounds/sunny.mp3",
+        Rain:"React_WeatherApp/Sounds/Heavyrain.mp3",
+        "Light rain":"React_WeatherApp/Sounds/RAIN.mp3",
+        Drizzle:"React_WeatherApp/Sounds/RAIN.mp3",
+        Snow:"React_WeatherApp/Sounds/snow.mp3",
+        Cloudy:"React_WeatherApp/Sounds/wind.mp3",
+        Overcast:"React_WeatherApp/Sounds/overcast.mp3",
+        Mist:"React_WeatherApp/Sounds/wind.mp3"
+        
+        
+    };
+    const newSound = soundMap[condition.trim()]||"React_WeatherApp/Sounds/sunny.mp3"
+    //stop the previous sound
+    audioRef.current.pause();
+
+    //set the new sound
+    audioRef.current.src = newSound;
+    audioRef.current.load()//reload the new sound
+    if(isSoundOn){
+      audioRef.current.play()
+      .catch((err)=>console.log("Error playing the audio",err))
+
+    }
+    setBackgroundImage(imageMap[condition.trim()] )|| "/Images/clear.jpeg";
+
+
+    return ()=>{
+      audioRef.current.pause()
+    }
+  }, [condition,isSoundOn]);
+
+
+  
+  // Toggle Sound Function
+const toggleSound = () => {
+  setSound((prev) => {
+    if (prev) {
+      audioRef.current.pause(); // Mute when toggled off
+    } else {
+      audioRef.current.play().catch((err) => console.error("Audio Play Error:", err)); // Play when toggled on
+    }
+
+    return !prev
+  }); // Toggle state
+  
+  
+};
 
   
   return (
@@ -88,7 +138,7 @@ const Home = ({ user, fetchWeather, weatherData, forecastData, loading, error })
           <Text fontSize={"md"} fontWeight={"bolder"}>
             Here you can check real-time weather updates for any location. Log in to continue.
           </Text>
-          <Button onClick={login} bg={"green"} colorPalette={"white"}>
+          <Button onClick={login} bg={"green"} color={"white"}>
             Login
           </Button>
         </VStack>
@@ -129,7 +179,11 @@ const Home = ({ user, fetchWeather, weatherData, forecastData, loading, error })
           {error && <Text color={"red.500"}>{error}</Text>}
 
           {weatherData && (
+            
             <Box p={5} bg={"gray.500"} borderRadius={"lg"} shadow={"md"} m={3}>
+              <Button onClick={toggleSound} colorPalette={"teal"} mt={4}>
+                  {isSoundOn ? <FaVolumeUp/> : <FaVolumeMute/>}
+              </Button>
               <Flex color={"crimson"}>
                 <Heading as={"h3"}>Weather Updates of {weatherData.location.name}</Heading>
                 <FaHome />
