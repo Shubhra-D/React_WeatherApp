@@ -62,14 +62,17 @@ const Home = ({ user, fetchWeather, weatherData, loading, error }) => {
       "Light snow":"React_WeatherApp/Images/snow.jpeg",
       Cloudy: "React_WeatherApp/Images/cloud.jpeg",
       Overcast: "React_WeatherApp/Images/cloud.jpeg",
+      "Partly cloudy":"React_WeatherApp/Images/cloud.jpeg",
       Mist: "React_WeatherApp/Images/cloud.jpeg",
-      "Patchy light snow":"React_WeatherApp/Images/snow.jpeg"
+      "Patchy light snow":"React_WeatherApp/Images/snow.jpeg",
+      "Patchy rain nearby":"React_WeatherApp/Images/rain.jpeg"
     };
     const soundMap = {
         Clear:"React_WeatherApp/Sounds/sunny.mp3",
         Sunny:"React_WeatherApp/Sounds/sunny.mp3",
         Rain:"React_WeatherApp/Sounds/Heavyrain.mp3",
         "Light rain":"React_WeatherApp/Sounds/RAIN.mp3",
+        "Light snow":"React_WeatherApp/Sounds/snow.mp3",
         Drizzle:"React_WeatherApp/Sounds/RAIN.mp3",
         Snow:"React_WeatherApp/Sounds/snow.mp3",
         Cloudy:"React_WeatherApp/Sounds/wind.mp3",
@@ -184,6 +187,7 @@ const toggleSound = () => {
             <Box p={5} bg={"gray.500"} borderRadius={"lg"} shadow={"md"} m={3}>
               <Button onClick={toggleSound} colorPalette={"teal"} mt={4}>
                   {isSoundOn ? <FaVolumeUp/> : <FaVolumeMute/>}
+                  {isSoundOn ? "Mute Weather Sound" :"UnMute Weather Sound"}
               </Button>
               <Flex color={"crimson"}>
                 <Heading as={"h3"}>Weather Updates of {weatherData.location.name}</Heading>
